@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "720875011591",
+    "project_id": "u3-p2-basedatos-firestore",
+    "storage_bucket": "u3-p2-basedatos-firestore.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:720875011591:android:b8d6d79ef6baa18b96f4a2",
+        "android_client_info": {
+          "package_name": "mx.edu.ittepic.ladm_u3_practica2_basedatosfirestore_alvaradomartinezantoniodejesus"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "720875011591-gr8pj447pqab00i5i7g9bkd3lf646li3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDu-elGDFWLkpCpsTDH_is5_afpXfCp1YU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "720875011591-gr8pj447pqab00i5i7g9bkd3lf646li3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
