@@ -118,7 +118,7 @@ class Asignacion(este: Fragment) {
             }
     }
 
-    fun dialogoEliminarActualizar(position: Int, nom:EditText, area:EditText, fecha:EditText, act:Button) {
+    fun dialogoEliminarActualizar(position: Int, nom:EditText, area:EditText, fecha:EditText, act:Button, lista: ListView) {
         var idElegido = listaID.get(position)
         AlertDialog.Builder(este.requireContext())
             .setTitle("ATENCIÓN!!")
@@ -127,13 +127,13 @@ class Asignacion(este: Fragment) {
                 eliminar(idElegido)
             }
             .setNeutralButton("ACTUALIZAR"){d,i->
-                actualizar(idElegido,nom,area,fecha,act)
+                actualizar(idElegido,nom,area,fecha,act,lista)
             }
             .setNegativeButton("CANCELAR"){d,i->}
             .show()
     }
 
-    fun actualizar(idElegido: String, nom: EditText, area: EditText, fecha: EditText, act: Button) {
+    fun actualizar(idElegido: String, nom: EditText, area: EditText, fecha: EditText, act: Button, lista: ListView) {
         act.isEnabled = true
         val baseRemota = FirebaseFirestore.getInstance()
         baseRemota.collection("asignacion")
@@ -143,6 +143,7 @@ class Asignacion(este: Fragment) {
                 nom.setText(it.getString("NombreEmp"))
                 area.setText(it.getString("AreaTrabajo"))
                 fecha.setText(it.getString("Fecha"))
+                mostrarInv(it.getString("Id")!!,lista)
             }
             .addOnFailureListener {
                 AlertDialog.Builder(este.requireContext())
@@ -186,5 +187,134 @@ class Asignacion(este: Fragment) {
             }
     }
 
+    fun consultarPorEmp(nom:String,lista:ListView){
+        FirebaseFirestore.getInstance()
+            .collection("asignacion")
+            .addSnapshotListener { query, error ->
+                //Snapshoot = foto de datos
+                if (error!=null){
+                    //Si entra, hay un error
+                    AlertDialog.Builder(este.requireContext())
+                        .setMessage(error.message)
+                        .show()
+                    return@addSnapshotListener
+                }
+
+                arreglo.clear()
+                listaID.clear()
+
+                for(documento in query!!){
+                    if (documento.getString("NombreEmp").equals(nom)){
+                        var cadena = "ID: ${documento.getString("Id")}\n" +
+                                "Nombre Empleado: ${documento.getString("NombreEmp")}\n" +
+                                "Fecha: ${documento.getString("Fecha")}\n" +
+                                "Codigo de Barras : ${documento.getString("CodigoBarras")}"
+
+                        arreglo.add(cadena)
+                        listaID.add(documento.id)
+                    }
+
+                }
+
+                lista.adapter = ArrayAdapter<String>(este.requireContext(),
+                    android.R.layout.simple_list_item_1, arreglo)
+
+            }
+    }
+
+    fun consultarPorArea(area:String,lista:ListView){
+        FirebaseFirestore.getInstance()
+            .collection("asignacion")
+            .addSnapshotListener { query, error ->
+                //Snapshoot = foto de datos
+                if (error!=null){
+                    //Si entra, hay un error
+                    AlertDialog.Builder(este.requireContext())
+                        .setMessage(error.message)
+                        .show()
+                    return@addSnapshotListener
+                }
+
+                arreglo.clear()
+                listaID.clear()
+
+                for(documento in query!!){
+                    if (documento.getString("AreaTrabajo").equals(area)){
+                        var cadena = "ID: ${documento.getString("Id")}\n" +
+                                "Nombre Empleado: ${documento.getString("NombreEmp")}\n" +
+                                "Fecha: ${documento.getString("Fecha")}\n" +
+                                "Area de Trabajo: ${documento.getString("AreaTrabajo")}\n" +
+                                "Codigo de Barras : ${documento.getString("CodigoBarras")}"
+
+                        arreglo.add(cadena)
+                        listaID.add(documento.id)
+                    }
+
+                }
+
+                lista.adapter = ArrayAdapter<String>(este.requireContext(),
+                    android.R.layout.simple_list_item_1, arreglo)
+
+            }
+    }
+
+    fun consultarPorFecha(fecha:String,lista:ListView){
+        FirebaseFirestore.getInstance()
+            .collection("asignacion")
+            .addSnapshotListener { query, error ->
+                //Snapshoot = foto de datos
+                if (error!=null){
+                    //Si entra, hay un error
+                    AlertDialog.Builder(este.requireContext())
+                        .setMessage(error.message)
+                        .show()
+                    return@addSnapshotListener
+                }
+
+                arreglo.clear()
+                listaID.clear()
+
+                for(documento in query!!){
+                    if (documento.getString("Fecha").equals(fecha)){
+                        var cadena = "ID: ${documento.getString("Id")}\n" +
+                                "Nombre Empleado: ${documento.getString("NombreEmp")}\n" +
+                                "Fecha: ${documento.getString("Fecha")}\n" +
+                                "Fecha: ${documento.getString("AreaTrabajo")}\n" +
+                                "Codigo de Barras : ${documento.getString("CodigoBarras")}"
+
+                        arreglo.add(cadena)
+                        listaID.add(documento.id)
+                    }
+
+                }
+
+                lista.adapter = ArrayAdapter<String>(este.requireContext(),
+                    android.R.layout.simple_list_item_1, arreglo)
+
+            }
+    }
+
+    fun mostrarInv(idElegido:String,lista:ListView){
+        val baseRemota = FirebaseFirestore.getInstance()
+        baseRemota.collection("inventario")
+            .document(idElegido)
+            .get() //OBTIENE 1 DOCUMENTO
+            .addOnSuccessListener {
+                arreglo.clear()
+                var cadena = "Codigo de Barras: ${it.getString("CodigoBarras")}\n" +
+                        "Tipo de Equipo: ${it.getString("TipoEquipo")}\n" +
+                        "Características: ${it.getString("Caracteristicas")}\n" +
+                        "Fecha de Compra: ${it.getString("FechaCompra")}"
+                arreglo.add(cadena)
+                lista.adapter = ArrayAdapter<String>(este.requireContext(),
+                    android.R.layout.simple_list_item_1, arreglo)
+            }
+            .addOnFailureListener {
+                AlertDialog.Builder(este.requireContext())
+                    .setMessage(it.message)
+                    .show()
+            }
+
+    }
 
 }
