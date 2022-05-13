@@ -32,6 +32,10 @@ class GalleryFragment : Fragment() {
 
         asig.llenarSpinner(binding.codigobarras)
 
+        asig.mostrar(binding.lista)
+
+        binding.actualizar.isEnabled = false
+
         binding.insertar.setOnClickListener {
             asig.nomEmp = binding.nomempleado.text.toString()
             asig.areaTrabajo = binding.areatrab.text.toString()
@@ -41,6 +45,10 @@ class GalleryFragment : Fragment() {
             binding.areatrab.text.clear()
             binding.fecha.text.clear()
             asig.llenarSpinner(binding.codigobarras)
+        }
+
+        binding.lista.setOnItemClickListener { adapterView, view, position, l ->
+            asig.dialogoEliminarActualizar(position,binding.nomempleado,binding.areatrab,binding.fecha,binding.actualizar)
         }
 
         return root

@@ -8,12 +8,6 @@
     android:padding="20dp"
     tools:context=".ui.gallery.GalleryFragment">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="ID"
-        android:id="@+id/id"/>
-
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

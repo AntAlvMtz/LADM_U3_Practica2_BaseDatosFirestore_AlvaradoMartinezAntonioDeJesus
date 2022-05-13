@@ -17,6 +17,7 @@ class Asignacion(este: Fragment) {
     var codigoBarras = ""
     var arreglo = ArrayList<String>()
     var listaID = ArrayList<String>()
+    var listaIDInv = ArrayList<String>()
     var listaCB = ArrayList<String>()
 
     fun llenarSpinner(cod:Spinner){
@@ -33,13 +34,13 @@ class Asignacion(este: Fragment) {
                 }
 
                 listaCB.clear()
-                listaID.clear()
+                listaIDInv.clear()
                 //var cadena = "Selecciona un código de barras\n"
                 //listaCB.add(cadena)
                 for(documento in query!!){
                     var cadena = "${documento.getString("CodigoBarras")}\n"
                     listaCB.add(cadena)
-                    listaID.add(documento.id)
+                    listaIDInv.add(documento.id)
 
                 }
                 cod.adapter = ArrayAdapter(este.requireContext(),android.R.layout.simple_spinner_item,listaCB)
@@ -47,7 +48,7 @@ class Asignacion(este: Fragment) {
                 cod.onItemSelectedListener = object:
                 AdapterView.OnItemSelectedListener{
                     override fun onItemSelected(p0: AdapterView<*>?, p1: View?, position: Int, p3: Long) {
-                        id = listaID.get(position)
+                        id = listaIDInv.get(position)
                         codigoBarras = listaCB.get(position)
                     }
 
@@ -83,7 +84,107 @@ class Asignacion(este: Fragment) {
             }
     }
 
+    fun mostrar(lista:ListView){
 
+        FirebaseFirestore.getInstance()
+            .collection("asignacion")
+            .addSnapshotListener { query, error ->
+                //Snapshoot = foto de datos
+                if (error!=null){
+                    //Si entra, hay un error
+                    AlertDialog.Builder(este.requireContext())
+                        .setMessage(error.message)
+                        .show()
+                    return@addSnapshotListener
+                }
+
+                arreglo.clear()
+                listaID.clear()
+
+                for(documento in query!!){
+                    var cadena = "ID: ${documento.getString("Id")}\n" +
+                            "Nombre Empleado: ${documento.getString("NombreEmp")}\n" +
+                            "Fecha: ${documento.getString("Fecha")}\n" +
+                            "Codigo de Barras : ${documento.getString("CodigoBarras")}"
+
+                    arreglo.add(cadena)
+                    listaID.add(documento.id)
+
+                }
+
+                lista.adapter = ArrayAdapter<String>(este.requireContext(),
+                    android.R.layout.simple_list_item_1, arreglo)
+
+            }
+    }
+
+    fun dialogoEliminarActualizar(position: Int, nom:EditText, area:EditText, fecha:EditText, act:Button) {
+        var idElegido = listaID.get(position)
+        AlertDialog.Builder(este.requireContext())
+            .setTitle("ATENCIÓN!!")
+            .setMessage("¿Qué desea hacer con \n ${arreglo.get(position)}")
+            .setPositiveButton("ELIMINAR"){d, i->
+                eliminar(idElegido)
+            }
+            .setNeutralButton("ACTUALIZAR"){d,i->
+                actualizar(idElegido,nom,area,fecha,act)
+            }
+            .setNegativeButton("CANCELAR"){d,i->}
+            .show()
+    }
+
+    fun actualizar(idElegido: String, nom: EditText, area: EditText, fecha: EditText, act: Button) {
+        act.isEnabled = true
+        val baseRemota = FirebaseFirestore.getInstance()
+        baseRemota.collection("asignacion")
+            .document(idElegido)
+            .get() //OBTIENE 1 DOCUMENTO
+            .addOnSuccessListener {
+                nom.setText(it.getString("NombreEmp"))
+                area.setText(it.getString("AreaTrabajo"))
+                fecha.setText(it.getString("Fecha"))
+            }
+            .addOnFailureListener {
+                AlertDialog.Builder(este.requireContext())
+                    .setMessage(it.message)
+                    .show()
+            }
+
+        act.setOnClickListener {
+            baseRemota.collection("asignacion")
+                .document(idElegido)
+                .update("Id", id,"NombreEmp" , nom.text.toString(), "AreaTrabajo",area.text.toString(),
+                    "Fecha" , fecha.text.toString(),"CodigoBarras" , codigoBarras)
+                .addOnSuccessListener {
+                    Toast.makeText(este.requireContext(),"ÉXITO! SE ACTUALIZÓ CORRECTAMENTE", Toast.LENGTH_LONG).show()
+                    nom.text.clear()
+                    area.text.clear()
+                    fecha.text.clear()
+                }
+                .addOnFailureListener {
+                    AlertDialog.Builder(este.requireContext())
+                        .setMessage(it.message)
+                        .show()
+                }
+            act.isEnabled = false
+
+        }
+    }
+
+    fun eliminar(idElegido: String) {
+        val baseRemota = FirebaseFirestore.getInstance()
+        baseRemota.collection("asignacion")
+            .document(idElegido)
+            .delete()
+            .addOnSuccessListener {
+                Toast.makeText(este.requireContext(),"SE ELIMINÓ CORRECTAMENTE", Toast.LENGTH_LONG).show()
+            }
+            .addOnFailureListener {
+                AlertDialog.Builder(este.requireContext())
+                    .setMessage(it.message)
+                    .show()
+            }
+    }
 
 
 }
