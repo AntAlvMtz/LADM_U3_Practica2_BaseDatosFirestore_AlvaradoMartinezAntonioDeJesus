@@ -142,4 +142,72 @@ class Inventario(este: Fragment) {
             }
 
     }
+
+    fun consultarPorTipo(tipo:String,lista: ListView){
+        FirebaseFirestore.getInstance()
+            .collection("inventario")
+            .addSnapshotListener { query, error ->
+                //Snapshoot = foto de datos
+                if (error!=null){
+                    //Si entra, hay un error
+                    AlertDialog.Builder(este.requireContext())
+                        .setMessage(error.message)
+                        .show()
+                    return@addSnapshotListener
+                }
+
+                arreglo.clear()
+                listaID.clear()
+
+                for(documento in query!!){
+                    if(documento.getString("TipoEquipo").equals(tipo)){
+                        var cadena = "Codigo de Barras: ${documento.getString("CodigoBarras")}\n" +
+                                "Tipo de Equipo: ${documento.getString("TipoEquipo")}\n" +
+                                "Características: ${documento.getString("Caracteristicas")}\n" +
+                                "Fecha de Compra: ${documento.getString("FechaCompra")}"
+                        arreglo.add(cadena)
+                        listaID.add(documento.id)
+                    }
+
+                }
+
+                lista.adapter = ArrayAdapter<String>(este.requireContext(),
+                    android.R.layout.simple_list_item_1, arreglo)
+
+            }
+    }
+
+    fun consultarPorCaracteristicas(carac:String,lista: ListView){
+        FirebaseFirestore.getInstance()
+            .collection("inventario")
+            .addSnapshotListener { query, error ->
+                //Snapshoot = foto de datos
+                if (error!=null){
+                    //Si entra, hay un error
+                    AlertDialog.Builder(este.requireContext())
+                        .setMessage(error.message)
+                        .show()
+                    return@addSnapshotListener
+                }
+
+                arreglo.clear()
+                listaID.clear()
+
+                for(documento in query!!){
+                    if(documento.getString("Caracteristicas").equals(carac)){
+                        var cadena = "Codigo de Barras: ${documento.getString("CodigoBarras")}\n" +
+                                "Tipo de Equipo: ${documento.getString("TipoEquipo")}\n" +
+                                "Características: ${documento.getString("Caracteristicas")}\n" +
+                                "Fecha de Compra: ${documento.getString("FechaCompra")}"
+                        arreglo.add(cadena)
+                        listaID.add(documento.id)
+                    }
+
+                }
+
+                lista.adapter = ArrayAdapter<String>(este.requireContext(),
+                    android.R.layout.simple_list_item_1, arreglo)
+
+            }
+    }
 }

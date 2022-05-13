@@ -1,9 +1,11 @@
 package mx.edu.ittepic.ladm_u3_practica2_basedatosfirestore_alvaradomartinezantoniodejesus.ui.gallery
 
+import android.R
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -21,6 +23,8 @@ class GalleryFragment : Fragment() {
 
     val asig = Asignacion(this)
 
+    val opciones = listOf("Tipo de Consulta","Por Empleado", "Por Area de Trabajo", "Por Fecha")
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -35,6 +39,9 @@ class GalleryFragment : Fragment() {
         asig.mostrar(binding.lista)
 
         binding.actualizar.isEnabled = false
+
+        binding.op.adapter = ArrayAdapter(this.requireContext(),
+            R.layout.simple_spinner_item,opciones)
 
         binding.insertar.setOnClickListener {
             asig.nomEmp = binding.nomempleado.text.toString()
